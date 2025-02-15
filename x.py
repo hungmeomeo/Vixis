@@ -1,22 +1,12 @@
 import streamlit as st
-import requests
 from navbar import navbar
+from helpers.fetchApi import *
 
-# Function to fetch data from API
-def fetch_data(api_url, payload):
-    try:
-        response = requests.post(api_url, json=payload)
-        data = response.json().get('text', "No response received.")
-        return data
-    except requests.exceptions.RequestException as e:
-        return f"Error: {e}"
 
 def interface():
     st.set_page_config(page_title="Financial Report Generator", layout="wide")
     navbar()
     
-
-        # Layout: 3 Columns
     col1, col2, col3 = st.columns([6,6,6])
 
     ### Column 1: Web Scraper
@@ -35,9 +25,9 @@ def interface():
         with st.status("Agent is ready ...", expanded=True) as status:
             if st.button("Update prompt", key="update1"):
                 if prompt1.strip():
-                    output1 = fetch_data("https://mincaai.app.flowiseai.com/api/v1/prediction/645e41db-37ad-4466-b368-15d04a28b50a",
+                    output1 = fetch_data("https://mincaai-1.app.flowiseai.com/api/v1/prediction/645e41db-37ad-4466-b368-15d04a28b50a",
                                         {"question": prompt1})
-                    st.write(output1)
+                    output1_placeholder.write(output1)
                     status.update(label="Download complete!", state="complete", expanded=False)
                 else:
                     st.warning("Please enter a valid company or index.")
@@ -61,7 +51,7 @@ def interface():
                 if prompt2.strip():
                     output2 = fetch_data("https://mincaai.app.flowiseai.com/api/v1/prediction/def0efd9-158a-46a3-b334-5e061d6dc535",
                                         {"question": prompt2})
-                    st.write(output2)
+                    output2_placeholder.write(output2)
                     status.update(label="Download complete!", state="complete", expanded=False)
                 else:
                     st.warning("Please enter a report description.")
@@ -69,34 +59,30 @@ def interface():
 
     ### Column 3: Analysis Engine
     with col3:
-        st.subheader("PDF File Uploader")
+        st.subheader("📂 PDF File Uploader")
         uploaded_file = st.file_uploader("Upload PDF file", type=["pdf"], key="pdf_uploader")
 
-        st.subheader("Agent Analysis Engine")
+        st.subheader("🤖 Agent Analysis Engine")
+
         output3_placeholder = st.empty()
 
         with st.status("Agent is ready ...", expanded=True) as status:
-            if st.button("Analyze PDF", key="update3"):
+            if st.button("🔍 Analyze PDF", key="update3"):
                 if uploaded_file:
-                    output3 = fetch_data("https://mincaai.app.flowiseai.com/api/v1/prediction/your-agent-id-here",
-                                        {"file_name": uploaded_file.name})
-                    st.write(output3)
-                    status.update(label="Analysis complete!", state="complete", expanded=False)
+                    files = {"files": (uploaded_file.name, uploaded_file, uploaded_file.type)}
+
+                    # Flowise API for analysis
+                    API_URL = "https://mincaai-1.app.flowiseai.com/api/v1/attachments/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c/bd13aae3-c806-46e0-8095-d48c9ccfea08"
+                    fileContent = fetch_attachment_data(API_URL, files=files)
+                    print(fileContent)
+                    output3 = fetch_data("https://mincaai-1.app.flowiseai.com/api/v1/prediction/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c",{"question":fileContent})
+
+                    output3_placeholder.write(output3)
+                    status.update(label="✅ Analysis complete!", state="complete", expanded=False)
                 else:
-                    st.warning("Please upload a PDF file.")
-                    status.update(label="Please upload a PDF file.", state="error", expanded=False)
+                    st.warning("⚠️ Please upload a PDF file.")
+                    status.update(label="❌ Please upload a PDF file.", state="error", expanded=False)
+
 
     st.button("Generate Report", key="generate_report")
-
-
-# if st.button("Update prompt", key="update1"):
-#         if prompt1.strip():
-#             output1 = fetch_data("https://mincaai.app.flowiseai.com/api/v1/prediction/645e41db-37ad-4466-b368-15d04a28b50a",{"question": prompt1})
-#             print(prompt1, output1)
-#             # output1_placeholder.text_area("Output", value=output1, height=150, disabled=True)
-#             st.chat_message(output1)
-#         else:
-#             st.warning("Please enter a valid company or index.")
-
-# Column 2: Stock Options
 
