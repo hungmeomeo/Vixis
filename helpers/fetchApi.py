@@ -13,7 +13,6 @@ def fetch_attachment_data(api_url, files):
 def fetch_data(api_url, payload):
     try:
         response = requests.post(api_url, json=payload)
-        print(response.json())
         data = response.json().get('text', "No response received.")
         return data
     except requests.exceptions.RequestException as e:

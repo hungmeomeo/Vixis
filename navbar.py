@@ -21,15 +21,7 @@ def navbar():
         st.session_state.report_contents[new_report.name] = ""  # Initialize report content
         st.session_state.current_report = new_report.name
 
-    # Rename a report
-    def rename_report(old_name, new_name):
-        if new_name and new_name != old_name and new_name not in st.session_state.reports:
-            st.session_state.reports[st.session_state.reports.index(old_name)] = new_name
-            st.session_state.report_contents[new_name] = st.session_state.report_contents.pop(old_name)
-            if st.session_state.current_report == old_name:
-                st.session_state.current_report = new_name
-            st.session_state.renaming_report = None  # Exit rename mode
-            st.rerun()
+
 
     # Delete a report
     def delete_report(report_name):
@@ -64,8 +56,7 @@ def navbar():
                     st.session_state.current_report = report
 
         with col2:
-            if st.button("✏️", key=f"rename_{report}"):
-                st.session_state.renaming_report = report  # Enter rename mode
+            pass
 
         with col3:
             if st.button("🗑️", key=f"delete_{report}"):

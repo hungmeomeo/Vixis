@@ -3,7 +3,7 @@ from streamlit_js_eval import streamlit_js_eval  # Handles cookies
 from datetime import datetime
 from models.Report import Report
 from navbar import navbar
-from x import interface
+from interface import interface
 
 # Define user credentials (replace with DB lookup for real apps)
 CREDENTIALS = {
@@ -44,36 +44,10 @@ def login():
         else:
             st.sidebar.error("Invalid credentials")
 
-# Main application function
 def main():
     st.set_page_config(page_title="Financial Report Generator", layout="wide")
 
-    # Auto-login if cookie exists
-    # stored_user = get_user_session()
-    # if stored_user and "logged_in" not in st.session_state:
-    #     st.session_state["logged_in"] = True
-    #     st.session_state["username"] = stored_user
-
-    # if "logged_in" not in st.session_state:
-    #     st.session_state["logged_in"] = False
-
-    # if not st.session_state["logged_in"]:
-    #     login()
-    #     return
-
-    # # Logout button
-    # if st.sidebar.button("Logout", key="logout_button"):
-    #     st.session_state["logged_in"] = False
-    #     clear_cookies()  # Clear cookies
-    #     st.rerun()  # ✅ FIXED: Refresh properly
-
-    # # Display main content after login
-    # st.title("Financial Report Generator")
-    # st.write(f"Welcome, {st.session_state['username']}! 🚀")
-
     navbar()
-
-    # Layout: 3 Columns
     col1, col2, col3 = st.columns(3)
 
     with col1:
