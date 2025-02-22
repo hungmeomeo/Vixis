@@ -11,22 +11,6 @@ CREDENTIALS = {
     "password": "1"
 }
 
-# Function to get user session from cookies
-def get_user_session():
-    return streamlit_js_eval(js_expressions="document.cookie", want_output=True)
-
-# Function to set cookies using JavaScript
-def set_cookie(key, value):
-    streamlit_js_eval(js_expressions=f"document.cookie = '{key}={value}; path=/'")
-
-# Function to clear cookies using JavaScript
-def clear_cookies():
-    streamlit_js_eval(js_expressions="""
-        document.cookie.split(";").forEach(function(c) { 
-            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-        });
-    """)
-
 # Authentication function
 def login():
     st.sidebar.title("Login")

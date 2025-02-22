@@ -5,7 +5,7 @@ def fetch_attachment_data(api_url, files):
     try:
         response = requests.post(api_url, files=files)
         response.raise_for_status()  # Ensure response is valid (200 OK)
-        data = response.json()[0].get('content', "Attachment content is not found.")
+        data = response.json()
         return data
     except requests.exceptions.RequestException as e:
         return f"Error: {e}"
