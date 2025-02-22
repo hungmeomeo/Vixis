@@ -1,123 +1,97 @@
 import streamlit as st
 from navbar import navbar
-from helpers.fetchApi import *
-from helpers.generateDocx import *
-from runAgent import *
-
+from helpers.fetchApi import fetch_attachment_data, fetch_data
+from helpers.generateDocx import generate_docx
+from runAgent import run_agent
 import json
-from io import BytesIO
-from docx import Document
+
+# API URLs
+API_ATTACHMENT = "https://mincaai-1.app.flowiseai.com/api/v1/attachments/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c/2f2131c7-bd60-4102-9a1e-4ea9e5e2a9ef"
+API_STOCK_ANALYSIS_1 = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/b40044b1-c01e-4dc3-a60e-b4bf6c00dc96"
+API_STOCK_ANALYSIS_2 = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/5a92d92a-a6ea-4d88-bbe6-2c16f3d50e9f"
+API_PDF_ANALYSIS = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c"
+API_TARGET_STOCKS = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/df48fb74-0478-451e-8d62-49501ec20823"
+API_REPORT_GENERATION = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/131cac63-bc31-4ccb-9c9a-8304f78fe8ed"
 
 def interface():
+    """Streamlit interface for generating financial reports."""
     st.set_page_config(page_title="Financial Report Generator", layout="wide")
     navbar()
 
-    # Initialize session state for outputs if not already set
-    if "output1" not in st.session_state:
-        st.session_state.output1 = ""
-    if "output2" not in st.session_state:
-        st.session_state.output2 = ""
-    if "output3" not in st.session_state:
-        st.session_state.output3 = ""
+    # Initialize session state
+    for key in ["output1", "output2", "output3", "generated_report", "docx_file"]:
+        if key not in st.session_state:
+            st.session_state[key] = ""
 
-    prompt = st.text_area(
-        "Market analysis for tech stocks",
-        placeholder="Enter list of stocks (i.e, AI, Tech, etc.)",
-        height=100,
-        key="prompt2"
-    )
-
-    uploaded_files = st.file_uploader("PDF File Uploader", accept_multiple_files=True, type=["pdf"], key="pdf_uploader")
-
-    files = [("files", (file.name, file, file.type)) for file in uploaded_files]
-    API_URL = "https://mincaai-1.app.flowiseai.com/api/v1/attachments/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c/bd13aae3-c806-46e0-8095-d48c9ccfea08"
-    fileContent = fetch_attachment_data(API_URL, files=files)
-            
-
+    # User input for market analysis
+    st.subheader("Enter your prompt")
+    prompt = st.text_area("Market analysis for tech stocks", 
+                          placeholder="Enter list of stocks (e.g., AI, Tech, etc.)", 
+                          height=100, key="prompt2")
     prompt_lines = [p.strip() for p in prompt.split("\n") if p.strip()]
 
-    col1, col2, col3 = st.columns([6,6,6])
-    
+    # File uploader
+    uploaded_files = st.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"], key="pdf_uploader")
+    files = [("files", (file.name, file, file.type)) for file in uploaded_files]
+    file_content = fetch_attachment_data(API_ATTACHMENT, files=files) if uploaded_files else None
+
+    # Stock Analysis Agents
+    col1, col2, col3 = st.columns([6, 6, 6])
 
     with col1:
-        prompt = prompt_lines[0] if len(prompt_lines) > 0 else ""
-        run_agent(
-            agent_name="Agent Stock Options",
-            prompt_lines=prompt,
-            api_url="https://mincaai-1.app.flowiseai.com/api/v1/prediction/b40044b1-c01e-4dc3-a60e-b4bf6c00dc96",
-            key_output="output1",
-            key_button="update1"
-        )
-    
+        if prompt_lines:
+            run_agent("Stock options agent", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
+
     with col2:
-        prompt = prompt_lines[0] + '\n'+ prompt_lines[1] if len(prompt_lines) > 1 else ""
-        run_agent(
-            agent_name="Agent Stock Options",
-            prompt_lines=prompt,
-            api_url="https://mincaai-1.app.flowiseai.com/api/v1/prediction/5a92d92a-a6ea-4d88-bbe6-2c16f3d50e9f",
-            key_output="output2",
-            key_button="update2"
-        )
+        if len(prompt_lines) > 1:
+            run_agent("Web scraper Agent", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
 
-    
     with col3:
-        #if st.session_state.output1 and st.session_state.output2:
-            if fileContent:
-                fileContentStr = json.dumps(fileContent, indent=2)  
-                prompt = "Stock Options: "+ {st.session_state.output1} + '\nWebScrapper Result: '+ {st.session_state.output2} + '\nFile Content: '+ fileContentStr 
-                run_agent(
-                    agent_name="Agent PDF Analysis",
-                    prompt_lines=prompt,
-                    api_url="https://mincaai-1.app.flowiseai.com/api/v1/prediction/7d7fcbbd-d20f-4f06-a2cc-daefb9accd8c",
-                    key_output="output3",
-                    key_button="update3"
-                )
-
-    st.subheader("📂 Agent Document Generator")
-    download_btn_placeholder = st.empty()  
-    genReport_placeholder = st.empty()
-    outputFile_placeholder = st.empty()
-    
-    # Placeholder for download button
-
-    fileContentStr = json.dumps(fileContent, indent=2)  
-    prompt4 = "Stock Companies: "+ {prompt_lines[0]} + '\nFile Content: '+ fileContentStr 
-    API_URL = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/df48fb74-0478-451e-8d62-49501ec20823"
-    agent4Result = fetch_data(API_URL, {
-        "question": prompt4
-    })
+        if file_content:
+            file_content_str = json.dumps(file_content, indent=2)
+            combined_prompt = f"Stock Options: {st.session_state.output1}\nWebScrapper Result: {st.session_state.output2}\nMultiple files Content: {file_content_str}"
+            run_agent("Financial analyst agent", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
 
     
+    # Ensure all outputs are available before generating the report
     if any([st.session_state.output1, st.session_state.output2, st.session_state.output3]):
+        st.subheader("📂 Generate report agent")
+
+        # Placeholders
+        download_btn_placeholder = st.empty()
+        genReport_placeholder = st.empty()
+        outputFile_placeholder = st.empty()
+
         with genReport_placeholder:
             with st.status("Agent is ready ...", expanded=True) as status:
-                if st.button("🔄 Generate Report"):   
+                if st.button("🔄 Generate Report"):
+                    file_content_str = json.dumps(file_content, indent=2) if file_content else ""
+                    stock_query = f"Stock Companies: {prompt_lines[0]}\nMultiple files Content: {file_content_str}" if prompt_lines else ""
 
-                    API_URL = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/131cac63-bc31-4ccb-9c9a-8304f78fe8ed"
-                    reportContent = fetch_data(API_URL, {
-                        "question": f"Stock prices options: {st.session_state.output1}\nTarget stock prices: {agent4Result}\nReport analysis: {st.session_state.output3}"
-                    })
+                    agent4_result = fetch_data(API_TARGET_STOCKS, {"question": stock_query})
+                    report_query = {
+                        "question": f"Stock prices options: {st.session_state.output1}\n"
+                                    f"Target stock prices: {agent4_result}\n"
+                                    f"Report analysis: {st.session_state.output3}"
+                    }
 
-                    # Save report content in session state
-                    st.session_state.generated_report = reportContent  
+                    # Fetch generated report
+                    st.session_state.generated_report = fetch_data(API_REPORT_GENERATION, report_query)
 
-                    # Generate DOCX file
-                    st.session_state.docx_file = generate_docx(reportContent)
+                    # Generate a DOCX file
+                    st.session_state.docx_file = generate_docx(st.session_state.generated_report)
 
+                    # Update status
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
 
-        # Ensure report and download button persist
+        # Ensure report output and download button persist
         if "generated_report" in st.session_state and "docx_file" in st.session_state:
             with download_btn_placeholder:
                 st.download_button(
-                    label="📥 Download Report as DOCX",
+                    "📥 Download Report as DOCX",
                     data=st.session_state.docx_file,
                     file_name="report.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
 
-            outputFile_placeholder.write(st.session_state.generated_report)
-
-    else:
-        st.error("Please validate at least one agent before generating the report.")
-
+            outputFile_placeholder.write(st.session_state.generated_report)  # Display generated report
