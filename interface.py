@@ -15,11 +15,11 @@ API_REPORT_GENERATION = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/1
 
 def interface():
     """Streamlit interface for generating financial reports."""
-    st.set_page_config(page_title="Financial Report Generator", layout="wide")
-    navbar()
+
+    # navbar()
 
     # Initialize session state
-    for key in ["output1", "output2", "output3", "generated_report", "docx_file"]:
+    for key in ["output1", "output2", "output3"]:
         if key not in st.session_state:
             st.session_state[key] = ""
 
@@ -55,6 +55,7 @@ def interface():
     
     # Ensure all outputs are available before generating the report
     if any([st.session_state.output1, st.session_state.output2, st.session_state.output3]):
+    # if True:
         st.subheader("📂 Generate report agent")
 
         # Placeholders
