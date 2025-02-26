@@ -4,6 +4,7 @@ from datetime import datetime
 from models.Report import Report
 from navbar import navbar
 from interface import interface
+from interface1 import interface1
 
 
 if __name__ == "__main__":
@@ -19,5 +20,5 @@ if __name__ == "__main__":
         interface()
     elif st.session_state.selected_page == "Note d’analyse mono sous-jacent":
         st.title("Note d’analyse mono sous-jacent")
-        pass
+        interface1()
     # main()
