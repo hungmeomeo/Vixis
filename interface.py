@@ -24,14 +24,14 @@ def interface():
             st.session_state[key] = ""
 
     # User input for market analysis
-    st.subheader("Enter your prompt")
-    prompt = st.text_area("Market analysis for tech stocks", 
-                          placeholder="Enter list of stocks (e.g., AI, Tech, etc.)", 
+    st.subheader("Entrez votre prompt")
+    prompt = st.text_area("Analyse sectorielle + Performance des entreprises", 
+                          placeholder="Entrez la liste des entreprises\nEntrez le secteur des entreprises (à la ligne)", 
                           height=100, key="prompt2")
     prompt_lines = [p.strip() for p in prompt.split("\n") if p.strip()]
 
     # File uploader
-    uploaded_files = st.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"], key="pdf_uploader")
+    uploaded_files = st.file_uploader("Télécharger des fichiers PDF", accept_multiple_files=True, type=["pdf"], key="pdf_uploader")
     files = [("files", (file.name, file, file.type)) for file in uploaded_files]
     file_content = fetch_attachment_data(API_ATTACHMENT, files=files) if uploaded_files else None
 
@@ -40,23 +40,23 @@ def interface():
 
     with col1:
         if prompt_lines:
-            run_agent("Stock options agent", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
+            run_agent("Agent Performance des Actions", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
 
     with col2:
         if len(prompt_lines) > 1:
-            run_agent("Web scraper Agent", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
+            run_agent("Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
 
     with col3:
         if file_content:
             file_content_str = json.dumps(file_content, indent=2)
             combined_prompt = f"Stock Options: {st.session_state.output1}\nWebScrapper Result: {st.session_state.output2}\nMultiple files Content: {file_content_str}"
-            run_agent("Financial analyst agent", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
+            run_agent("Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
 
     
     # Ensure all outputs are available before generating the report
     if any([st.session_state.output1, st.session_state.output2, st.session_state.output3]):
     # if True:
-        st.subheader("📂 Generate report agent")
+        st.subheader("📂 Agent Note d’Analyse")
 
         # Placeholders
         download_btn_placeholder = st.empty()
@@ -64,8 +64,8 @@ def interface():
         outputFile_placeholder = st.empty()
 
         with genReport_placeholder:
-            with st.status("Agent is ready ...", expanded=True) as status:
-                if st.button("🔄 Generate Report"):
+            with st.status("L’agent est prêt ...", expanded=True) as status:
+                if st.button("🔄 Générez la note d’analyse"):
                     file_content_str = json.dumps(file_content, indent=2) if file_content else ""
                     stock_query = f"Stock Companies: {prompt_lines[0]}\nMultiple files Content: {file_content_str}" if prompt_lines else ""
 
@@ -89,7 +89,7 @@ def interface():
         if "generated_report" in st.session_state and "docx_file" in st.session_state:
             with download_btn_placeholder:
                 st.download_button(
-                    "📥 Download Report as DOCX",
+                    "📥 Téléchargez la note d’analyse en DOCX",
                     data=st.session_state.docx_file,
                     file_name="report.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"

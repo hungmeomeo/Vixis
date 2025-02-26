@@ -10,12 +10,14 @@ if __name__ == "__main__":
     st.set_page_config(page_title="Financial Report Generator", layout="wide")
 
     if "selected_page" not in st.session_state:
-        st.session_state.selected_page = "Home"
+        st.session_state.selected_page = "Note d’analyse sectorielle"
 
     navbar()
     
-    if st.session_state.selected_page == "Home":
+    if st.session_state.selected_page == "Note d’analyse sectorielle":
+        st.title("Note d’analyse sectorielle")
         interface()
-    elif st.session_state.selected_page == "Generate Report":
+    elif st.session_state.selected_page == "Note d’analyse mono sous-jacent":
+        st.title("Note d’analyse mono sous-jacent")
         pass
     # main()

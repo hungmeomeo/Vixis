@@ -6,10 +6,10 @@ from streamlit_option_menu import option_menu
 def navbar():
     with st.sidebar:
         selected = option_menu(
-            menu_title="Navigation",
-            options=["Home", "Generate Report"],
+            menu_title="Vixis - Note d’analyse",
+            options=["Note d’analyse sectorielle", "Note d’analyse mono sous-jacent"],
             menu_icon="menu-up",
-            default_index=["Home", "Generate Report"].index(st.session_state.selected_page),
+            default_index=["Note d’analyse sectorielle", "Note d’analyse mono sous-jacent"].index(st.session_state.selected_page),
             key="navigation",
             styles={
                 "container": {"background-color": "transparent"},

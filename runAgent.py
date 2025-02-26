@@ -19,10 +19,10 @@ def run_agent(agent_name,prompt_lines, api_url, key_output, key_button):
     output_placeholder.write(st.session_state.get(key_output, ""))  # Persist output
 
     with agent_placeholder:
-            with st.status("Agent is ready ...", expanded=True) as status:
-                if st.button("Run prompt", key=key_button):
+            with st.status("L’agent est prêt ...", expanded=True) as status:
+                if st.button("Run", key=key_button):
                     if prompt_lines:
                         st.session_state[key_output] = fetch_data(api_url, {"question": prompt_lines})
                         output_placeholder.write(st.session_state[key_output])
-                        status.update(label="Download complete!", state="complete", expanded=False)
+                        status.update(label="Tâche exécutée!", state="complete", expanded=False)
                 
