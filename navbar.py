@@ -19,7 +19,7 @@ def navbar():
                     "text-align": "left",
                     "margin": "0px",
                     "padding": "10px",
-                    "color": "#FFFFFF",
+                    "color": "#808080",
                     "background-color": "transparent",
                 },
                 "nav-link-selected": {"background-color": "#666699", "color": "white"},
