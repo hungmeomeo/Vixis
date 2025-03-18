@@ -4,6 +4,7 @@ import pandas as pd
 from io import BytesIO
 import json
 from dotenv import load_dotenv
+from mongodb import MongoDBClient
 
 # Load environment variables from .env file
 load_dotenv()
@@ -66,6 +67,8 @@ class SharePointClient:
         print(df)
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
+        mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
+        mongo_client.update_collection('stock', json_data)
         print(json_output)
 
     def load_data(self):
@@ -75,6 +78,5 @@ class SharePointClient:
         drive_id = os.getenv("DRIVE_ID")
         folder_id = os.getenv("FOLDER_ID")
         self.download_folder_contents(site_id, drive_id, folder_id)
-        print("Data loaded successfully!")
 
 

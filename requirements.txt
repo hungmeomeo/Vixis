@@ -44,3 +44,4 @@ python-docx
 streamlit-option-menu
 python-dotenv
 openpyxl
+pymongo
