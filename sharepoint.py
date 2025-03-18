@@ -64,12 +64,10 @@ class SharePointClient:
     def transform(self, df):
         df.columns = df.iloc[0]  # Assign first row as column names
         df = df[1:].reset_index(drop=True)  # Remove first row from data
-        print(df)
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
         mongo_client.update_collection('stock', json_data)
-        print(json_output)
 
     def load_data(self):
         site_url = os.getenv("SITE_URL")
