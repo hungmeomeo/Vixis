@@ -79,9 +79,62 @@ def navbar():
 
         # Centered button (real Streamlit button inside styled layout)
 
-        if st.button("Update Data", key="update_data", help="Click to refresh data"):
+
+
+        
+        st.markdown(
+            """
+            <style>
+
+                /* Email Text */
+                .profile-email {
+                    font-size: 50px;
+                    color: #333;
+                    font-weight: bold;
+                    margin-top: 10px;
+                    font-family: 'Arial', sans-serif;
+                }
+
+                /* Logout Button */
+                .logout-button {
+                    background: linear-gradient(90deg, #ff4b4b, #ff6b6b);
+                    color: white;
+                    font-size: 16px;
+                    font-weight: bold;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    border: none;
+                    transition: 0.3s ease-in-out;
+                    width: 100%;
+                    margin-top: 15px;
+                    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+                }
+                .logout-button:hover {
+                    background: linear-gradient(90deg, #d43f3f, #e64a4a);
+                    transform: scale(1.05);
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+                }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        user_email = "Email: "+ st.experimental_user.preferred_username  # Fetch dynamically if using authentication
+        st.markdown(f'<p class="profile-email">{user_email}</p>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([2,1])
+        with col1:
+            if st.button("Update Data", key="update_data", help="Click to refresh data"):
                 with st.spinner("Updating data... ⏳"):
                     sp = SharePointClient()
                     sp.load_data()
                     st.success("✅ Data updated successfully!")
+        with col2:
+            
+        # Logout Button
+            if st.button("🚪 Logout", key="logout"):
+                st.logout()
+                # st.session_state.clear()
+                # st.experimental_rerun()
 
+        st.markdown('</div>', unsafe_allow_html=True)
