@@ -73,7 +73,6 @@ class SharePointClient:
         df = df.applymap(lambda x: round(float(x), 2) if str(x).replace('.', '', 1).isdigit() else x)
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
-        print(json_output)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
         mongo_client.update_collection('stock', json_data)
 
