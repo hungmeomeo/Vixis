@@ -46,3 +46,4 @@ python-dotenv
 openpyxl
 pymongo
 Authlib
+certifi

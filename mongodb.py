@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import certifi
 import json
 import os
 
@@ -11,7 +12,7 @@ class MongoDBClient:
         - mongo_url (str): MongoDB Atlas connection string
         - db_name (str): Database name
         """
-        self.client = MongoClient(mongo_url)
+        self.client = MongoClient(mongo_url,tlsCAFile=certifi.where())
         self.db = self.client[db_name]
 
     def update_collection(self, collection_name, new_data):
@@ -31,8 +32,9 @@ class MongoDBClient:
             # Insert new data
             if new_data:
                 collection.insert_many(new_data)
+                print(f"Successfully updated collection: {collection_name}")
 
         except Exception as e:
-            pass
+            print(f"An error occurred: {e}")
 
 

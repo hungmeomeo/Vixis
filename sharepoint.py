@@ -61,11 +61,19 @@ class SharePointClient:
                 if item['name'].endswith('Screening Valeurs - VIXIS.xlsx'):
                     self.download_file(file_url, item['name'])
 
+    def round_numeric_values(x):
+        numeric_value = pd.to_numeric(x, errors='coerce')  # Convert to number if possible
+        if pd.notna(numeric_value):  # Check if it's a valid number
+            return round(numeric_value, 2)  # Round if it's a number
+        return x 
+    
     def transform(self, df):
         df.columns = df.iloc[0]  # Assign first row as column names
         df = df[1:].reset_index(drop=True)  # Remove first row from data
+        df = df.applymap(lambda x: round(float(x), 2) if str(x).replace('.', '', 1).isdigit() else x)
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
+        print(json_output)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
         mongo_client.update_collection('stock', json_data)
 
