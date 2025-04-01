@@ -46,7 +46,7 @@ class SharePointClient:
         response = requests.get(file_url, headers={'Authorization': f'Bearer {self.access_token}'})
         response.raise_for_status()
         if file_name.endswith('Screening Valeurs - VIXIS.xlsx'):
-            df = pd.read_excel(BytesIO(response.content), usecols="A:S")
+            df = pd.read_excel(BytesIO(response.content))
             self.transform(df)
 
     def download_folder_contents(self, site_id, drive_id, folder_id):
@@ -70,7 +70,17 @@ class SharePointClient:
     def transform(self, df):
         df.columns = df.iloc[0]  # Assign first row as column names
         df = df[1:].reset_index(drop=True)  # Remove first row from data
-        df = df.applymap(lambda x: round(float(x), 2) if str(x).replace('.', '', 1).isdigit() else x)
+
+        # Find the index of the "SCORING" column
+        if "SCORING" in df.columns:
+            scoring_index = df.columns.get_loc("SCORING") + 1  # Keep up to "SCORING" (inclusive)
+            df = df.iloc[:, :scoring_index]  # Keep only required columns
+
+        # Convert numeric values to float and round them
+        df = df.map(lambda x: round(float(x), 2) if str(x).replace('.', '', 1).isdigit() else x)
+
+        print(df)
+
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
@@ -83,5 +93,4 @@ class SharePointClient:
         drive_id = os.getenv("DRIVE_ID")
         folder_id = os.getenv("FOLDER_ID")
         self.download_folder_contents(site_id, drive_id, folder_id)
-
 
