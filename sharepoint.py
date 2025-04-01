@@ -79,8 +79,6 @@ class SharePointClient:
         # Convert numeric values to float and round them
         df = df.map(lambda x: round(float(x), 2) if str(x).replace('.', '', 1).isdigit() else x)
 
-        print(df)
-
         json_data = df.to_dict(orient="records")
         json_output = json.dumps(json_data, indent=4)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
