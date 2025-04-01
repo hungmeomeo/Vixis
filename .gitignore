@@ -3,4 +3,4 @@ venv/
 .env
 
 # Ignore Streamlit cache
-.streamlit/
+.streamlit/config.toml
