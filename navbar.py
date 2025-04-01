@@ -1,73 +1,140 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 from datetime import datetime
 from models.Report import Report
-    
+from sharepoint import SharePointClient
+
 def navbar():
-    if 'reports' not in st.session_state:
-        st.session_state.reports = []  # Store list of reports
-    if 'current_report' not in st.session_state:
-        st.session_state.current_report = None  # Currently selected report
-    if 'report_contents' not in st.session_state:
-        st.session_state.report_contents = {}  # Store report content dynamically
-    if 'renaming_report' not in st.session_state:
-        st.session_state.renaming_report = None  # Track rename mode
+    # Ensure session state has selected_page
+    if "selected_page" not in st.session_state:
+        st.session_state.selected_page = "Note d’analyse sectorielle"
 
-    # Create a new report
-    def create_new_report():
-        new_report_name = f"Report {len(st.session_state.reports) + 1}"
-        timestamp = datetime.now().strftime("%Y-%m-%d")
-        new_report = Report(new_report_name, timestamp)
-        st.session_state.reports.append(new_report.name)
-        st.session_state.report_contents[new_report.name] = ""  # Initialize report content
-        st.session_state.current_report = new_report.name
+    with st.sidebar:
+        selected = option_menu(
+            menu_title="Vixis - Note d’analyse",
+            options=["Note d’analyse sectorielle", "Note d’analyse mono sous-jacent"],
+            menu_icon="menu-up",
+            default_index=["Note d’analyse sectorielle", "Note d’analyse mono sous-jacent"].index(st.session_state.selected_page),
+            key="navigation",
+            styles={
+                "container": {
+                    "background-color": "#F8F9FA",
+                    "padding": "10px",
+                    "border-radius": "8px",
+                },
+                "icon": {"color": "#4B0082", "font-size": "22px"},
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "center",
+                    "margin": "5px",
+                    "padding": "12px",
+                    "color": "#333333",
+                    "border-radius": "5px",
+                    "transition": "0.3s ease-in-out",
+                    "font-family": "Arial, sans-serif",
+                },
+                "nav-link-selected": {
+                    "background-color": "#4B0082",
+                    "color": "white",
+                    "font-weight": "bold",
+                    "font-family": "Arial, sans-serif",
+                },
+            }
+        )
 
-    # Rename a report
-    def rename_report(old_name, new_name):
-        if new_name and new_name != old_name and new_name not in st.session_state.reports:
-            st.session_state.reports[st.session_state.reports.index(old_name)] = new_name
-            st.session_state.report_contents[new_name] = st.session_state.report_contents.pop(old_name)
-            if st.session_state.current_report == old_name:
-                st.session_state.current_report = new_name
-            st.session_state.renaming_report = None  # Exit rename mode
-            st.rerun()
+        # Update session state with selection
+        st.session_state.selected_page = selected
 
-    # Delete a report
-    def delete_report(report_name):
-        if report_name in st.session_state.reports:
-            st.session_state.reports.remove(report_name)
-            st.session_state.report_contents.pop(report_name, None)  # Remove content
-            if st.session_state.current_report == report_name:
-                st.session_state.current_report = None  # Reset selection
-        st.rerun()
+        # Centered button with same style as navbar
+        st.markdown(
+            """
+            <style>
+                .update-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 20px;
+                }
+                .update-button {
+                    background-color: #4B0082;
+                    color: white;
+                    font-size: 21px;
+                    font-weight: bold;
+                    font-family: Arial, sans-serif;
+                    padding: 12px 20px;
+                    border-radius: 5px;
+                    width: 100%;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: 0.3s ease-in-out;
+                    border: none;
+                }
+                .update-button:hover {
+                    background-color: #5A0099;
+                }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Sidebar for managing reports
-    st.sidebar.title("📊 Vixis - Reports")
-    st.sidebar.header("Manage Reports")
+        # Centered button (real Streamlit button inside styled layout)
 
-    if st.sidebar.button("New Report ➕"):
+
+
         
-        create_new_report()
+        st.markdown(
+            """
+            <style>
 
-    # Display existing reports with rename & delete buttons
-    for report in reversed(st.session_state.reports):
-        col1, col2, col3 = st.sidebar.columns([10, 2, 2])  # Adjusted column widths
+                /* Email Text */
+                .profile-email {
+                    font-size: 50px;
+                    color: #333;
+                    font-weight: bold;
+                    margin-top: 10px;
+                    font-family: 'Arial', sans-serif;
+                }
 
+                /* Logout Button */
+                .logout-button {
+                    background: linear-gradient(90deg, #ff4b4b, #ff6b6b);
+                    color: white;
+                    font-size: 16px;
+                    font-weight: bold;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    border: none;
+                    transition: 0.3s ease-in-out;
+                    width: 100%;
+                    margin-top: 15px;
+                    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+                }
+                .logout-button:hover {
+                    background: linear-gradient(90deg, #d43f3f, #e64a4a);
+                    transform: scale(1.05);
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+                }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        user_email = "Email: "+ st.experimental_user.preferred_username  # Fetch dynamically if using authentication
+        st.markdown(f'<p class="profile-email">{user_email}</p>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([2,1])
         with col1:
-            if st.session_state.renaming_report == report:
-                # Show text input for renaming
-                new_name = st.text_input("", report, key=f"rename_input_{report}")
-                if new_name and new_name != report:
-                    rename_report(report, new_name)
-            else:
-                # Show button for selecting report
-                if st.button(report, key=f"report_{report}"):
-                    st.session_state.current_report = report
-
+            if st.button("Update Data", key="update_data", help="Click to refresh data"):
+                with st.spinner("Updating data... ⏳"):
+                    sp = SharePointClient()
+                    sp.load_data()
+                    st.success("✅ Data updated successfully!")
         with col2:
-            if st.button("✏️", key=f"rename_{report}"):
-                st.session_state.renaming_report = report  # Enter rename mode
+            
+        # Logout Button
+            if st.button("🚪 Logout", key="logout"):
+                st.logout()
+                # st.session_state.clear()
+                # st.experimental_rerun()
 
-        with col3:
-            if st.button("🗑️", key=f"delete_{report}"):
-                delete_report(report)
-
+        st.markdown('</div>', unsafe_allow_html=True)
