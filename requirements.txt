@@ -47,3 +47,6 @@ openpyxl
 pymongo
 Authlib
 certifi
+beautifulsoup4
+fastapi 
+uvicorn

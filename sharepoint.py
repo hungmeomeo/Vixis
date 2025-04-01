@@ -46,7 +46,7 @@ class SharePointClient:
         response = requests.get(file_url, headers={'Authorization': f'Bearer {self.access_token}'})
         response.raise_for_status()
         if file_name.endswith('Screening Valeurs - VIXIS.xlsx'):
-            df = pd.read_excel(BytesIO(response.content), usecols="A:P")
+            df = pd.read_excel(BytesIO(response.content), usecols="A:S")
             self.transform(df)
 
     def download_folder_contents(self, site_id, drive_id, folder_id):
