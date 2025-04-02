@@ -7,7 +7,7 @@ import json
 
 # API URLs
 API_ATTACHMENT = "https://mincaai-1.app.flowiseai.com/api/v1/attachments/fecc2cff-f971-401e-8eeb-de68484888d1/b49aa47d-d507-4b4c-a731-ebacbf08725e"
-API_STOCK_ANALYSIS_1 = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/411b7434-e4c5-4976-9dd2-35d793b58947"
+API_STOCK_ANALYSIS_1 = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/a3b63d2d-3f5f-4e40-97f7-e2d0f9f4c8e9"
 API_STOCK_ANALYSIS_2 = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/5a92d92a-a6ea-4d88-bbe6-2c16f3d50e9f"
 API_PDF_ANALYSIS = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/fecc2cff-f971-401e-8eeb-de68484888d1"
 API_REPORT_GENERATION = "https://mincaai-1.app.flowiseai.com/api/v1/prediction/f80e1f89-b069-4139-b93b-19042ec800a2"
