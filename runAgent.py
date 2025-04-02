@@ -5,7 +5,7 @@ import re
 def replace_headers(text):
     return re.sub(r'^(#{1,5})\s', '###### ', text, flags=re.MULTILINE)
 
-def run_agent(col, agent_name,prompt_lines, api_url, key_output, key_button):
+def run_agent(col, agent_name, prompt_lines, api_url, key_output, key_button):
     """
     Function to run an agent in a specified Streamlit column.
 
@@ -21,10 +21,8 @@ def run_agent(col, agent_name,prompt_lines, api_url, key_output, key_button):
         st.subheader(agent_name)
         agent_placeholder = st.empty()
         output_placeholder = st.empty()
-        output_placeholder.write(st.session_state.get(key_output, ""))  # Persist output
+        output_placeholder.markdown(f"<small>{st.session_state.get(key_output, '')}</small>", unsafe_allow_html=True)  # Persist output in small text
 
-
-    
         with agent_placeholder:
             with st.status("L’agent est prêt ...", expanded=True) as status:
                 if st.button("Run", key=key_button):
@@ -32,6 +30,6 @@ def run_agent(col, agent_name,prompt_lines, api_url, key_output, key_button):
                         st.session_state[key_output] = fetch_data(api_url, {"question": prompt_lines})
                         st.session_state[key_output] = replace_headers(st.session_state[key_output])
 
-                        output_placeholder.write(st.session_state[key_output])
+                        output_placeholder.markdown(f"<small>{st.session_state[key_output]}</small>", unsafe_allow_html=True)
                         status.update(label="Tâche exécutée!", state="complete", expanded=False)
                 
