@@ -128,7 +128,7 @@ def navbar():
                 with st.spinner("Updating data... ⏳"):
                     sp = SharePointClient()
                     sp.load_data()
-                    st.success("✅ Data updated successfully!")
+                    # st.success("✅ Data updated successfully!")
         with col2:
             
         # Logout Button
