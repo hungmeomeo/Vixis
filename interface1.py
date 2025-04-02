@@ -37,19 +37,19 @@ def interface1():
     # Stock Analysis Agents
     col1, col2, col3 = st.columns([6, 6, 6])
 
-    with col1:
-        if prompt_lines:
-            run_agent("Agent Données Financières", prompt_lines[0], API_STOCK_ANALYSIS_1, "output4", "update1")
 
-    with col2:
-        if len(prompt_lines) > 0:
-            run_agent("Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output5", "update2")
+    if prompt_lines:
+            run_agent(col1,"Agent Données Financières", prompt_lines[0], API_STOCK_ANALYSIS_1, "output4", "update1")
 
-    with col3:
-        if file_content:
+
+    if len(prompt_lines) > 0:
+            run_agent(col2,"Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output5", "update2")
+
+
+    if file_content:
             file_content_str = json.dumps(file_content, indent=2)
             combined_prompt = f"WebScrapper Result: {st.session_state.output5}\nMultiple files Content: {file_content_str}"
-            run_agent("Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output6", "update3")
+            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output6", "update3")
 
     
     # Ensure all outputs are available before generating the report
