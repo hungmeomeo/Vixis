@@ -36,7 +36,7 @@ def interface():
     file_content = fetch_attachment_data(API_ATTACHMENT, files=files) if uploaded_files else None
 
     # Stock Analysis Agents
-    col1, col2, col3 = st.columns([5, 3, 3])
+    col1, col2, col3 = st.columns([6, 3, 3])
 
     if prompt_lines:
         run_agent(col1, "Agent Performance des Actions", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
