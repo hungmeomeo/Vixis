@@ -5,6 +5,7 @@ from io import BytesIO
 import json
 from dotenv import load_dotenv
 from mongodb import MongoDBClient
+import streamlit as st
 
 # Load environment variables from .env file
 load_dotenv()
@@ -83,6 +84,7 @@ class SharePointClient:
         json_output = json.dumps(json_data, indent=4)
         mongo_client = MongoDBClient(mongo_url=os.getenv('MONGO_URL'), db_name=os.getenv('DB_NAME'))
         mongo_client.update_collection('stock', json_data)
+        st.success("Data successfully updated in MongoDB")
 
     def load_data(self):
         site_url = os.getenv("SITE_URL")
