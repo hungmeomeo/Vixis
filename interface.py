@@ -36,21 +36,19 @@ def interface():
     file_content = fetch_attachment_data(API_ATTACHMENT, files=files) if uploaded_files else None
 
     # Stock Analysis Agents
-    col1, col2, col3 = st.columns([6, 6, 6])
+    col1, col2, col3 = st.columns([2, 2, 2])
 
-    with col1:
-        if prompt_lines:
-            run_agent("Agent Performance des Actions", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
+    if prompt_lines:
+        run_agent(col1, "Agent Performance des Actions", prompt_lines[0], API_STOCK_ANALYSIS_1, "output1", "update1")
 
-    with col2:
-        if len(prompt_lines) > 0:
-            run_agent("Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
 
-    with col3:
-        if file_content:
+    if len(prompt_lines) > 0:
+            run_agent(col2,"Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
+
+    if file_content:
             file_content_str = json.dumps(file_content, indent=2)
             combined_prompt = f"Stock Options: {st.session_state.output1}\nWebScrapper Result: {st.session_state.output2}\nMultiple files Content: {file_content_str}"
-            run_agent("Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
+            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
 
     
     # Ensure all outputs are available before generating the report
