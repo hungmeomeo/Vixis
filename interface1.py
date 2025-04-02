@@ -42,7 +42,7 @@ def interface1():
             run_agent("Agent Données Financières", prompt_lines[0], API_STOCK_ANALYSIS_1, "output4", "update1")
 
     with col2:
-        if len(prompt_lines) > 1:
+        if len(prompt_lines) > 0:
             run_agent("Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output5", "update2")
 
     with col3:
