@@ -8,9 +8,9 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-def fetch_target_price(company_url):
+def fetch_target_price(url):
     """Fetch the target price from the consensus page."""
-    url = company_url.replace("cours/", "cours/consensus/", 1)
+
     response = requests.get(url, headers=headers)
 
     if response.status_code != 200:
@@ -38,7 +38,7 @@ def query_company(company_name, recursive_call=True):
 
     if response_url.startswith("https://www.boursorama.com/cours/"):
         output = {}
-
+        output['Main url'] = response_url
         # Extract table row data for "1 an", "3 ans", "5 ans"
         for row in soup.find_all("tr", class_="c-table__row"):
             first_col = row.find("th")
@@ -65,7 +65,9 @@ def query_company(company_name, recursive_call=True):
                 output[f'Dividende par action {year}'] = values[index]
                 output[f'PER {year}'] = values[index + 9]
 
-        output['Objectif de cours'] = fetch_target_price(response_url) or "Price data unavailable"
+        consensus_url = response_url.replace("cours/", "cours/consensus/", 1)
+        output['Objectif de cours'] = fetch_target_price(consensus_url) or "Price data unavailable"
+        output['Consensus url'] = consensus_url
         return output
 
     if recursive_call:
