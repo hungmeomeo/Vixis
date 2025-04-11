@@ -1,8 +1,8 @@
 from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-import io
-import re
+from docx.shared import Inches, Pt, RGBColor
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
 
 def add_bold_heading(paragraph, text):
     run = paragraph.add_run(text.replace("#####", "").strip())
@@ -10,6 +10,7 @@ def add_bold_heading(paragraph, text):
     run.font.name = 'Times New Roman'
     run.font.size = Pt(12)
     run.font.color.rgb = RGBColor(0, 0, 0)
+
 
 def add_table(doc, table_lines):
     headers = [h.strip() for h in table_lines[0].strip().split('|') if h.strip()]
@@ -43,7 +44,8 @@ def add_table(doc, table_lines):
 
     doc.add_paragraph("\n")  # Bottom padding after table
 
-def generate_docx(markdown_text: str) -> bytes:
+
+def markdown_to_docx(input_file, output_file):
     doc = Document()
     style = doc.styles['Normal']
     font = style.font
@@ -51,27 +53,29 @@ def generate_docx(markdown_text: str) -> bytes:
     font.size = Pt(12)
     font.color.rgb = RGBColor(0, 0, 0)
 
-    lines = markdown_text.splitlines()
+    with open(input_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
     table_buffer = []
     in_table = False
 
     for line in lines:
         stripped = line.strip()
 
-        if stripped.startswith("#####") or re.match(r'^\d+\.', stripped):
+        if stripped.startswith("#####") or (stripped[:2].isdigit() and stripped[2] == '.'):
             if table_buffer:
                 add_table(doc, table_buffer)
                 table_buffer = []
                 in_table = False
             para = doc.add_paragraph()
-            add_bold_heading(para, stripped.replace("*", ""))
+            add_bold_heading(para, stripped)
 
-        elif "|" in stripped and "---" in stripped:
-            continue  # Skip markdown table separators
+        elif "|" in line and "---" in line:
+            continue  # skip separator line
 
-        elif "|" in stripped:
+        elif "|" in line:
             in_table = True
-            table_buffer.append(stripped)
+            table_buffer.append(line)
 
         elif in_table and not stripped:
             add_table(doc, table_buffer)
@@ -84,8 +88,11 @@ def generate_docx(markdown_text: str) -> bytes:
                 table_buffer = []
                 in_table = False
             para = doc.add_paragraph()
-            cleaned_text = stripped.replace("**", "")
-            run = para.add_run(cleaned_text)
+            if stripped.startswith("**") and stripped.endswith("**"):
+                run = para.add_run(stripped.strip("*"))
+                run.bold = True
+            else:
+                run = para.add_run(stripped)
             run.font.name = 'Times New Roman'
             run.font.size = Pt(12)
             run.font.color.rgb = RGBColor(0, 0, 0)
@@ -93,8 +100,8 @@ def generate_docx(markdown_text: str) -> bytes:
     if table_buffer:
         add_table(doc, table_buffer)
 
-    # Save as byte stream
-    buffer = io.BytesIO()
-    doc.save(buffer)
-    buffer.seek(0)
-    return buffer.read()
+    doc.save(output_file)
+
+
+# Example usage
+markdown_to_docx("input.txt", "AXA_Report.docx")

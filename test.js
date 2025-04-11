@@ -24,6 +24,8 @@ async function getTopCompaniesByMarketCap(companyList) {
       HIGH_52WEEK: 1, // Column L
       CUR_MKT_CAP: 1, // Used for sorting
       SCORING: 1, // Column S (VIXIS Scoring)
+      PX_LAST: 1, // Column D
+      BEST_TARGET_PRICE: 1, // Column F
     };
 
     // Process input to extract NAME and UNIVERS

@@ -2,6 +2,8 @@ from pymongo import MongoClient
 import certifi
 import json
 import os
+import streamlit as st
+import time
 
 class MongoDBClient:
     def __init__(self, mongo_url, db_name):
@@ -33,6 +35,8 @@ class MongoDBClient:
             if new_data:
                 collection.insert_many(new_data)
                 print(f"Successfully updated collection: {collection_name}")
+                time.sleep(2)
+                st.success("Data successfully updated in MongoDB")
 
         except Exception as e:
             print(f"An error occurred: {e}")
