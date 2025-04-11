@@ -51,9 +51,7 @@ def interface():
             run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
 
     
-    # Ensure all outputs are available before generating the report
     if any([st.session_state.output1, st.session_state.output2, st.session_state.output3]):
-    # if True:
         st.subheader("📂 Agent Note d’Analyse")
 
         # Placeholders
@@ -77,13 +75,12 @@ def interface():
                     # Fetch generated report
                     st.session_state.generated_report = fetch_data(API_REPORT_GENERATION, report_query)
 
-                    # Generate a DOCX file
+                    # 📝 Convert to styled DOCX
                     st.session_state.docx_file = generate_docx(st.session_state.generated_report)
 
-                    # Update status
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
 
-        # Ensure report output and download button persist
+        # 📥 Download + preview
         if "generated_report" in st.session_state and "docx_file" in st.session_state:
             with download_btn_placeholder:
                 st.download_button(
@@ -93,4 +90,4 @@ def interface():
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
 
-            outputFile_placeholder.write(st.session_state.generated_report)  # Display generated report
+            outputFile_placeholder.write(st.session_state.generated_report)
