@@ -24,8 +24,8 @@ def interface1():
 
     # User input for market analysis
     st.subheader("Entrez votre prompt")
-    prompt = st.text_area("Analyse sectorielle + Performance des entreprises", 
-                          placeholder="Entrez la liste des entreprises\nEntrez le secteur des entreprises (à la ligne)", 
+    prompt = st.text_area("Analyse d'une entreprise", 
+                          placeholder="Entrez le nom de l'entreprise\nEntrez le secteur de l'entreprise", 
                           height=100, key="prompt2")
     prompt_lines = [p.strip() for p in prompt.split("\n") if p.strip()]
 
