@@ -71,7 +71,9 @@ class SharePointClient:
     def transform(self, df):
         df.columns = df.iloc[0]  # Assign first row as column names
         df = df[1:].reset_index(drop=True)  # Remove first row from data
-
+        if df['CUR_MKT_CAP'].isna().all():
+            st.error("All values in CUR_MKT_CAP are null. Please check the file.")
+            return
         # Find the index of the "SCORING" column
         if "SCORING" in df.columns:
             scoring_index = df.columns.get_loc("SCORING") + 1  # Keep up to "SCORING" (inclusive)
