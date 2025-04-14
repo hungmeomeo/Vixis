@@ -2,7 +2,7 @@ import streamlit as st
 from navbar import navbar
 from helpers.fetchApi import fetch_attachment_data, fetch_data
 from helpers.generateDocx import generate_docx
-from runAgent import run_agent
+from runAgent import *
 import json
 
 # API URLs
@@ -78,8 +78,8 @@ def interface1():
                     # Update status
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
                     st.session_state.generated_report_2 = st.session_state.generated_report_2.replace("```markdown", "").replace("```", "")
-
-                    print("Generated report:", st.session_state.generated_report_2)  # Debugging liness
+                    st.session_state.generated_report_2 = replace_headers(st.session_state.generated_report_2)
+                   
         # Ensure report output and download button persist
         if "generated_report_2" in st.session_state and "docx_file_2" in st.session_state:
             with download_btn_placeholder:

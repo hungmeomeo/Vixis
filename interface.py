@@ -2,7 +2,7 @@ import streamlit as st
 from navbar import navbar
 from helpers.fetchApi import fetch_attachment_data, fetch_data
 from helpers.generateDocx import generate_docx
-from runAgent import run_agent
+from runAgent import *
 import json
 
 # API URLs
@@ -80,6 +80,7 @@ def interface():
 
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
                     st.session_state.generated_report = st.session_state.generated_report.replace("```markdown", "").replace("```", "")
+                    st.session_state.generated_report = replace_headers(st.session_state.generated_report)
 
         # 📥 Download + preview
         if "generated_report" in st.session_state and "docx_file" in st.session_state:
