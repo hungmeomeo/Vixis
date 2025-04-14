@@ -79,6 +79,7 @@ def interface():
                     st.session_state.docx_file = generate_docx(st.session_state.generated_report)
 
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
+                    st.session_state.generated_report = st.session_state.generated_report.replace("```markdown", "").replace("```", "")
 
         # 📥 Download + preview
         if "generated_report" in st.session_state and "docx_file" in st.session_state:

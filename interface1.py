@@ -77,7 +77,9 @@ def interface1():
 
                     # Update status
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
+                    st.session_state.generated_report_2 = st.session_state.generated_report_2.replace("```markdown", "").replace("```", "")
 
+                    print("Generated report:", st.session_state.generated_report_2)  # Debugging liness
         # Ensure report output and download button persist
         if "generated_report_2" in st.session_state and "docx_file_2" in st.session_state:
             with download_btn_placeholder:
@@ -87,5 +89,5 @@ def interface1():
                     file_name="report.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
-
+            
             outputFile_placeholder.write(st.session_state.generated_report_2)  # Display generated report

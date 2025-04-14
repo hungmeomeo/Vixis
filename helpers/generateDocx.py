@@ -78,6 +78,9 @@ def generate_docx(markdown_text: str) -> bytes:
             table_buffer = []
             in_table = False
 
+        elif line.startswith("```"):
+            continue
+
         else:
             if table_buffer:
                 add_table(doc, table_buffer)
