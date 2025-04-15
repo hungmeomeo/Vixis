@@ -46,9 +46,8 @@ def interface():
             run_agent(col2,"Agent Actualité", "\n".join(prompt_lines[:2]), API_STOCK_ANALYSIS_2, "output2", "update2")
 
     if file_content:
-            file_content_str = json.dumps(file_content, indent=2)
-            combined_prompt = f"Stock Options: {st.session_state.output1}\nWebScrapper Result: {st.session_state.output2}\nMultiple files Content: {file_content_str}"
-            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
+            combined_prompt = f"Stock Options: {st.session_state.output1}"
+            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3", uploads=file_content)
 
     
     if any([st.session_state.output1, st.session_state.output2, st.session_state.output3]):
@@ -62,10 +61,10 @@ def interface():
         with genReport_placeholder:
             with st.status("L’agent est prêt ...", expanded=True) as status:
                 if st.button("🔄 Générez la note d’analyse"):
-                    file_content_str = json.dumps(file_content, indent=2) if file_content else ""
-                    stock_query = f"Stock Companies: {prompt_lines[0]}\nMultiple files Content: {file_content_str}" if prompt_lines else ""
+                    #file_content_str = json.dumps(file_content, indent=2) if file_content else ""
+                    stock_query = f"Stock Companies: {prompt_lines[0]}" if prompt_lines else ""
 
-                    agent4_result = fetch_data(API_TARGET_STOCKS, {"question": stock_query})
+                    agent4_result = fetch_data(API_TARGET_STOCKS, {"question": stock_query, "uploads": file_content})
                     report_query = {
                         "question": f"Stock prices options: {st.session_state.output1}\n"
                                     f"Target stock prices: {agent4_result}\n"

@@ -5,7 +5,7 @@ import re
 def replace_headers(text):
     return re.sub(r'^(#{1,5})\s', '###### ', text, flags=re.MULTILINE)
 
-def run_agent(col, agent_name, prompt_lines, api_url, key_output, key_button):
+def run_agent(col, agent_name, prompt_lines, api_url, key_output, key_button, uploads = None):
     """
     Function to run an agent in a specified Streamlit column.
 
@@ -27,7 +27,11 @@ def run_agent(col, agent_name, prompt_lines, api_url, key_output, key_button):
             with st.status("L’agent est prêt ...", expanded=True) as status:
                 if st.button("Run", key=key_button):
                     if prompt_lines:
-                        st.session_state[key_output] = fetch_data(api_url, {"question": prompt_lines})
+                        if uploads:
+                            print("uploads", uploads)
+                            st.session_state[key_output] = fetch_data(api_url, {"question": prompt_lines, "uploads": uploads})
+                        else: 
+                            st.session_state[key_output] = fetch_data(api_url, {"question": prompt_lines})
                         st.session_state[key_output] = replace_headers(st.session_state[key_output])
 
                         output_placeholder.markdown(f"<small>{st.session_state[key_output]}</small>", unsafe_allow_html=True)

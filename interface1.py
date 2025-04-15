@@ -33,6 +33,7 @@ def interface1():
     uploaded_files = st.file_uploader("Télécharger des fichiers PDF", accept_multiple_files=True, type=["pdf"], key="pdf_uploader")
     files = [("files", (file.name, file, file.type)) for file in uploaded_files]
     file_content = fetch_attachment_data(API_ATTACHMENT, files=files) if uploaded_files else None
+    print("file_content", file_content)
 
     # Stock Analysis Agents
     col1, col2, col3 = st.columns([5,3,3])
@@ -47,9 +48,8 @@ def interface1():
 
 
     if file_content:
-            file_content_str = json.dumps(file_content, indent=2)
-            combined_prompt = f"WebScrapper Result: {st.session_state.output5}\nMultiple files Content: {file_content_str}"
-            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output6", "update3")
+            combined_prompt = f"WebScrapper Result: {st.session_state.output5}"
+            run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output6", "update3", uploads=file_content)
 
     
     # Ensure all outputs are available before generating the report
@@ -79,7 +79,6 @@ def interface1():
                     status.update(label="✅ Report generated!", state="complete", expanded=False)
                     st.session_state.generated_report_2 = st.session_state.generated_report_2.replace("```markdown", "").replace("```", "")
 
-                    print("Generated report:", st.session_state.generated_report_2)  # Debugging liness
         # Ensure report output and download button persist
         if "generated_report_2" in st.session_state and "docx_file_2" in st.session_state:
             with download_btn_placeholder:
