@@ -47,7 +47,7 @@ def interface():
 
     if file_content:
             file_content_str = json.dumps(file_content, indent=2)
-            combined_prompt = f"Stock Options: {st.session_state.output1}\nWebScrapper Result: {st.session_state.output2}\nMultiple files Content: {file_content_str}"
+            combined_prompt = f"WebScrapper Result: {st.session_state.output2}"
             run_agent(col3,"Agent Analyste", combined_prompt, API_PDF_ANALYSIS, "output3", "update3")
 
     
